@@ -15,22 +15,26 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <div  class="loginCon">
 	<div class="imgCon">
-	<img style="margin-left: 50px; width: 350px;max-height: 200px;" id="loginLogo" src="javascript()">
+	<img style="margin-left: 50; max-width: 350px;" id="loginLogo" src="javascript()">
 	</div>
 		<hr class="indexHR" >
-		<a href="" type="button" style="margin: 5% 30%;" class="btn btn-lg btn-success"></a>
+		<a href="" type="button" style="margin: 5% 28%;min-width:44%" class="btn btn-lg btn-success"></a>
 	</div>
 	
 <script>
 var buttonArray = [
 	"Click zeh Offiziersbursche button!!!",
-	"Beam Me Up Scotty..."
+	"Beam Me Up Scotty...",
+	"Aaaaarrrrrrggghhh",
+	"It's a trap!"
 ];
 var logoArray = [
 	"images/batman-logo-big.gif",
-	"images/148px-Early_2270s_Starfleet.png"
+	"images/350px-Early_2270s_Starfleet.png",
+	"images/Bboargh.jpg",
+	"images/ackbar.jpg"
 ];
-var randomNumber = Math.floor(Math.random() * 2);
+var randomNumber = Math.floor(Math.random()*4);
 document.getElementById("loginLogo").src = logoArray[randomNumber];
 document.getElementsByTagName("a")[0].innerHTML = buttonArray[randomNumber];
 console.log(randomNumber);
