@@ -1,4 +1,5 @@
 <html>
+<head>
 <link rel="stylesheet" type="text/css" href="style.css">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
@@ -13,6 +14,8 @@
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</head>
+<body>
 <div  class="loginCon">
 	<div class="imgCon">
 	<img style="margin-left: 50; max-width: 350px;" id="loginLogo" src="javascript()">
@@ -39,4 +42,5 @@ document.getElementById("loginLogo").src = logoArray[randomNumber];
 document.getElementsByTagName("a")[0].innerHTML = buttonArray[randomNumber];
 console.log(randomNumber);
 </script>
+</body>
 </html>
