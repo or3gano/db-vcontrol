@@ -1,4 +1,5 @@
 <html>
+<?php include db-config.php ?>
 <head>
 <link rel="stylesheet" type="text/css" href="style.css">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -8,21 +9,20 @@
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-
 <!-- Optional theme -->
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-
 <!-- Latest compiled and minified JavaScript -->
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 </head>
+
 <body>
 <div  class="loginCon">
 	<div class="imgCon">
-	<img style="margin-left: 50; max-width: 350px;" id="loginLogo" src="javascript()">
+		<img style="margin-left: 50; max-width: 350px;" id="loginLogo" src="javascript()">
 	</div>
-		<hr class="indexHR" >
-		<a href="" type="button" style="margin: 5% 28%;min-width:44%" class="btn btn-lg btn-success"></a>
-	</div>
+	<hr class="indexHR" >
+	<a href="" type="button" style="margin: 5% 28%;min-width:44%" class="btn btn-lg btn-success"></a>
+</div>
 	
 <script>
 var buttonArray = [
@@ -42,5 +42,6 @@ document.getElementById("loginLogo").src = logoArray[randomNumber];
 document.getElementsByTagName("a")[0].innerHTML = buttonArray[randomNumber];
 console.log(randomNumber);
 </script>
+
 </body>
 </html>
