@@ -27,8 +27,8 @@ var buttonArray = [
 	"Beam Me Up Scotty..."
 ];
 var logoArray = [
-	"http://www.vectortemplates.com/raster/batman-logo-big.gif",
-	"http://img4.wikia.nocookie.net/__cb20090612021344/memoryalpha/en/images/thumb/5/55/Early_2270s_Starfleet.png/148px-Early_2270s_Starfleet.png"
+	"images/batman-logo-big.gif",
+	"images/148px-Early_2270s_Starfleet.png"
 ];
 var randomNumber = Math.floor(Math.random() * 2);
 document.getElementById("loginLogo").src = logoArray[randomNumber];
