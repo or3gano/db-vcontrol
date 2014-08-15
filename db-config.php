@@ -81,23 +81,30 @@ if (!$db_con) {
 
 $query = mysqli_query($db_con,"SELECT * FROM db_patches ORDER BY patch_id DESC LIMIT 1");	// get most recent patch installed from db
 $db_patch_array = mysqli_fetch_array($query);	// the array of the most recent patch installed
-$current_patch_version = $db_patch_array['patch_name'];	// return the name of the most recently instlled patch
+$current_patch_version = $db_patch_array['patch_name'];	// return the name of the most recently installed patch
 
 $count_query = mysqli_query($db_con,"SELECT * FROM db_patches");	// get all patches installed from db
 $number_patches_installed = mysqli_num_rows ($count_query);	// count number of patches installed
 
 $number_patch_files = count($patch_array);	// count the number of patch files in the db_patches directory
 
-echo 'Current Patch Version: ' . $current_patch_version . '<br>';
-echo 'Number Patches Installed: ' . $number_patches_installed . '<br>';
-echo 'Number Patch Files: ' . $number_patch_files . '<br>';
-
 
 // install new patch if not already installed
 
-while ( $number_patch_files > $number_patches_installed ) {
+if( $number_patch_files > $number_patches_installed ) {
 
-	$next_patch = $patch_array[$number_patches_installed];	// return the file path of the next uninstalled patch in the db_patches directory
+// backup database before patching
+/*
+shell_exec ( "mysqldump --host=localhost --user=$db_user --password=$db_pass db_vcontrol > dump" . date('Y-m-d') . ".sql" );
+echo "mysqldump --host=localhost --user=$db_user db_vcontrol > dump" . date('Y-m-d') . ".sql";
+*/
+
+
+
+for ( $i=$number_patches_installed; $i<($number_patch_files); $i++ ) {
+
+	$next_patch = $patch_array[$i];	// return the file path of the next uninstalled patch in the db_patches directory
+	$patch_name = str_replace('db-patches/', '', $next_patch);	// create patch name for db tracking
 
 	// read the sql file and run each line as a mysqli_query
 	$f = fopen($next_patch,"r+");
@@ -117,11 +124,6 @@ while ( $number_patch_files > $number_patches_installed ) {
 		}
 	  }
 	}
-	$patch_array[] = $next_patch;	// add new patch to patch_array
-	$patch_name = str_replace('db-patches/', '', $next_patch);	// create patch name for db tracking
-	$number_patch_files = count($patch_array);	// count the number of patch files in the db_patches directory
-	$count_query = mysqli_query($db_con,"SELECT * FROM db_patches");	// get all patches installed from db
-	$number_patches_installed = mysqli_num_rows ($count_query);	// count number of patches installed
 
 	// result messages
 	if (!$sqlErrorCode) {
@@ -134,7 +136,18 @@ while ( $number_patch_files > $number_patches_installed ) {
 	  echo "Statement:<br/> $sqlStmt<br/>";
 	}
 	mysqli_query($con, "INSERT INTO db_patches (patch_name, updated) VALUES ('" . $patch_name . "','" . date('Y-m-d') . "')" );
+	$count_query = mysqli_query($db_con,"SELECT * FROM db_patches");	// get all patches installed from db
+	$number_patches_installed = mysqli_num_rows ($count_query);	// count number of patches installed
+	
+	$query = mysqli_query($db_con,"SELECT * FROM db_patches ORDER BY patch_id DESC LIMIT 1");	// get most recent patch installed from db
+	$db_patch_array = mysqli_fetch_array($query);	// the array of the most recent patch installed
+	$current_patch_version = $db_patch_array['patch_name'];	// return the name of the most recently installed patch
 }
+}
+
+echo 'Current Patch Version: ' . $current_patch_version . '<br>';
+echo 'Number Patches Installed: ' . $number_patches_installed . '<br>';
+echo 'Number Patch Files: ' . $number_patch_files . '<br>';
 
 
 ?>
