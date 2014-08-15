@@ -26,9 +26,8 @@ if ($handle = opendir('db-patches')) {
 
 // runs all patch files
 if(!$db_exists) {
-	$version = 1;
 	foreach( $patch_array as $sqlFile) {
-		$patch_name = 'Patch ' . $version;
+		$patch_name = str_replace('db-patches/', '', $sqlFile);
 		
 		// read the sql file
 		$f = fopen($sqlFile,"r+");
@@ -59,17 +58,15 @@ if(!$db_exists) {
 		  echo "Error text: $sqlErrorText<br/>";
 		  echo "Statement:<br/> $sqlStmt<br/>";
 		}
-		mysqli_select_db($con,$db_name);
 		mysqli_query($con, "INSERT INTO db_patches (patch_name, updated) VALUES ('" . $patch_name . "','" . date('Y-m-d') . "')" );
-		$version++;
 	}
 }
 
 
 
 
-/*
-///CONNECT TO DATABASE
+
+/// CONNECT TO DATABASE ///
 $db_con = mysqli_connect($hostname, $db_user, $db_pass, $db_name);
 if (!$db_con) {
   die ("MySQL Connection error");
@@ -78,38 +75,67 @@ if (!$db_con) {
 
 
 
-///UPDATE DB IF THERE IS NEW PATCH
-// check for new patch
-$patch_version = mysqli_query($db_con,'SELECT * FROM db_patches ORDER BY patch_id DESC LIMIT 1') + 1;
-$sqlFile = 'patch' . $patch_version . '.sql';	// patch file name
-if 
+/// UPDATE DB IF THERE IS NEW PATCH ///
 
-// read the sql file
-$f = fopen($sqlFile,"r+");
-$sqlFile = fread($f, filesize($sqlFileToExecute));
-$sqlArray = explode(';',$sqlFile);
-foreach ($sqlArray as $stmt) {
-  if (strlen($stmt)>3 && substr(ltrim($stmt),0,2)!='/*') {
-    $result = mysqli_query($stmt);
-    if (!$result) {
-      $sqlErrorCode = mysqli_errno();
-      $sqlErrorText = mysqli_error();
-      $sqlStmt = $stmt;
-      break;
-    }
-  }
+// get all patches installed and patches in db_patches directory
+
+$query = mysqli_query($db_con,"SELECT * FROM db_patches ORDER BY patch_id DESC LIMIT 1");	// get most recent patch installed from db
+$db_patch_array = mysqli_fetch_array($query);	// the array of the most recent patch installed
+$current_patch_version = $db_patch_array['patch_name'];	// return the name of the most recently instlled patch
+
+$count_query = mysqli_query($db_con,"SELECT * FROM db_patches");	// get all patches installed from db
+$number_patches_installed = mysqli_num_rows ($count_query);	// count number of patches installed
+
+$number_patch_files = count($patch_array);	// count the number of patch files in the db_patches directory
+
+echo 'Current Patch Version: ' . $current_patch_version . '<br>';
+echo 'Number Patches Installed: ' . $number_patches_installed . '<br>';
+echo 'Number Patch Files: ' . $number_patch_files . '<br>';
+
+
+// install new patch if not already installed
+
+while ( $number_patch_files > $number_patches_installed ) {
+
+	$next_patch = $patch_array[$number_patches_installed];	// return the file path of the next uninstalled patch in the db_patches directory
+
+	// read the sql file and run each line as a mysqli_query
+	$f = fopen($next_patch,"r+");
+	$next_patch = fread($f, filesize($next_patch));
+	$sqlArray = explode(';',$next_patch);
+	foreach ($sqlArray as $stmt) {
+	  if (strlen($stmt)>3 && substr(ltrim($stmt),0,2)!='/*') {
+		$result = mysqli_query($con, $stmt);
+		if (!$result) {
+		  $sqlErrorCode = mysqli_errno($con);
+		  $sqlErrorText = mysqli_error($con);
+		  $sqlStmt = $stmt;
+		  break;
+		}
+		else {
+		  $sqlErrorCode = 0;
+		}
+	  }
+	}
+	$patch_array[] = $next_patch;	// add new patch to patch_array
+	$patch_name = str_replace('db-patches/', '', $next_patch);	// create patch name for db tracking
+	$number_patch_files = count($patch_array);	// count the number of patch files in the db_patches directory
+	$count_query = mysqli_query($db_con,"SELECT * FROM db_patches");	// get all patches installed from db
+	$number_patches_installed = mysqli_num_rows ($count_query);	// count number of patches installed
+
+	// result messages
+	if (!$sqlErrorCode) {
+	  echo $patch_name . " executed succesfully!<br>";
+	}
+	else {
+	  echo "An error occured during installation!<br/>";
+	  echo "Error code: $sqlErrorCode<br/>";
+	  echo "Error text: $sqlErrorText<br/>";
+	  echo "Statement:<br/> $sqlStmt<br/>";
+	}
+	mysqli_query($con, "INSERT INTO db_patches (patch_name, updated) VALUES ('" . $patch_name . "','" . date('Y-m-d') . "')" );
 }
-if ($sqlErrorCode == 0) {
-  echo "Script is executed succesfully!";
-} else {
-  echo "An error occured during installation!<br/>";
-  echo "Error code: $sqlErrorCode<br/>";
-  echo "Error text: $sqlErrorText<br/>";
-  echo "Statement:<br/> $sqlStmt<br/>";
-}
-//
-///
-*/
+
 
 ?>
 
