@@ -7,10 +7,10 @@ $db_pass = '';
 
 
 
-/// CREATE DB AND UPDATE ALL PATCHES IF FIRST INSTALL ///
+///     CREATE DB AND UPDATE ALL PATCHES IF FIRST INSTALL       ///
+
 $con = mysqli_connect($hostname, $db_user, $db_pass);	// db connecttion
 $db_exists = mysqli_select_db($con,$db_name);
-
 
 // puts all patch files into an array
 if ($handle = opendir('db-patches')) {
@@ -22,7 +22,6 @@ if ($handle = opendir('db-patches')) {
     }
     closedir($handle);
 }
-
 
 // runs all patch files
 if(!$db_exists) {
@@ -66,7 +65,7 @@ if(!$db_exists) {
 
 
 
-/// CONNECT TO DATABASE ///
+///     CONNECT TO DATABASE     ///
 $db_con = mysqli_connect($hostname, $db_user, $db_pass, $db_name);
 if (!$db_con) {
   die ("MySQL Connection error");
@@ -75,7 +74,7 @@ if (!$db_con) {
 
 
 
-/// UPDATE DB IF THERE IS NEW PATCH ///
+///     UPDATE DB IF THERE IS NEW PATCH     ///
 
 // get all patches installed and patches in db_patches directory
 
@@ -94,13 +93,10 @@ $number_patch_files = count($patch_array);	// count the number of patch files in
 if( $number_patch_files > $number_patches_installed ) {
 
 // backup database before patching
-/*
-shell_exec ( "mysqldump --host=localhost --user=$db_user --password=$db_pass db_vcontrol > dump" . date('Y-m-d') . ".sql" );
-echo "mysqldump --host=localhost --user=$db_user db_vcontrol > dump" . date('Y-m-d') . ".sql";
-*/
-
-
-
+exec ( 'mysqldump.exe --opt --skip-extended-insert --complete-insert --host=' . $hostname . ' --user=' . $db_user . ' --password="' . $db_pass . '" db_vcontrol>db-backups/backup' . date('Y-m-d') . '.sql' );
+echo 'Database backed up successfully!';
+    
+// install new patches patches
 for ( $i=$number_patches_installed; $i<($number_patch_files); $i++ ) {
 
 	$next_patch = $patch_array[$i];	// return the file path of the next uninstalled patch in the db_patches directory
@@ -145,6 +141,10 @@ for ( $i=$number_patches_installed; $i<($number_patch_files); $i++ ) {
 }
 }
 
+
+
+
+///     DISPLAY CURRENT PATCH INFORMATION   ///
 echo 'Current Patch Version: ' . $current_patch_version . '<br>';
 echo 'Number Patches Installed: ' . $number_patches_installed . '<br>';
 echo 'Number Patch Files: ' . $number_patch_files . '<br>';
